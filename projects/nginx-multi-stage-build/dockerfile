@@ -1,0 +1,26 @@
+# Stage 1: Build the static website
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy website source files (if applicable)
+COPY index.html /app/
+
+# Stage 2: Create the final lightweight container with NGINX
+FROM nginx:alpine
+
+# Set working directory to NGINX web root
+WORKDIR /usr/share/nginx/html
+
+# Remove default NGINX index file
+RUN rm -rf ./*
+
+# Copy the built files from the builder stage
+COPY --from=builder /app/index.html .
+
+# Expose port 80
+EXPOSE 80
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]
+
